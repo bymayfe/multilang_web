@@ -10,6 +10,11 @@ import { RiContactsFill } from "react-icons/ri";
 import heroSVG from "@/images/svg/hero.svg";
 
 function HeroSection() {
+  const { coder } = personalData;
+
+  const basicFields = ["name", "role", "location", "experienceYears"] as const;
+  type BasicField = (typeof basicFields)[number];
+
   const [typeEffect] = useTypewriter({
     words: personalData.designation,
     loop: true, // ✅ burada boolean verdik
@@ -120,11 +125,14 @@ function HeroSection() {
             </div> */}
           </div>
         </div>
-        <div className="order-1 lg:order-2 from-[#0d1224] border-[#1b2c68a0] relative rounded-lg border bg-gradient-to-r to-[#0a0d37]">
+        <div className="order-1 lg:order-2 relative rounded-lg border bg-gradient-to-r from-[#f4f4f5] to-[#e5e7eb] border-gray-300 dark:from-[#0d1224] dark:to-[#0a0d37] dark:border-[#1b2c68a0]">
+          {/* 🎨 Üst çizgiler */}
           <div className="flex flex-row">
             <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-pink-500 to-violet-600"></div>
             <div className="h-[1px] w-full bg-gradient-to-r from-violet-600 to-transparent"></div>
           </div>
+
+          {/* 🟢🔴🟠 Sol üst butonlar */}
           <div className="px-4 lg:px-8 py-5">
             <div className="flex flex-row space-x-2">
               <div className="h-3 w-3 rounded-full bg-red-400"></div>
@@ -132,123 +140,187 @@ function HeroSection() {
               <div className="h-3 w-3 rounded-full bg-green-200"></div>
             </div>
           </div>
-          <div className="overflow-hidden border-t-[2px] border-indigo-900 px-4 lg:px-8 py-4 lg:py-8">
+
+          {/* 💻 Kod Gövdesi */}
+          <div className="overflow-hidden border-t-[2px] border-indigo-200 dark:border-indigo-900 px-4 lg:px-8 py-4 lg:py-8">
             <code className="font-mono text-xs md:text-sm lg:text-base">
               <div className="blink">
                 <span className="mr-2 text-pink-500">const</span>
-                <span className="mr-2 text-white">coder</span>
+                <span className="mr-2 text-black dark:text-white">coder</span>
                 <span className="mr-2 text-pink-500">=</span>
-                <span className="text-gray-400">{"{"}</span>
+                <span className="text-gray-600 dark:text-gray-400">{"{"}</span>
               </div>
-              <div>
-                <span className="ml-4 lg:ml-8 mr-2 text-white">name:</span>
-                <span className="text-gray-400">{`'`}</span>
-                <span className="text-amber-300">Seyfettin Budak</span>
-                <span className="text-gray-400">{`',`}</span>
-              </div>
-              <div className="ml-4 lg:ml-8 mr-2">
-                <span className=" text-white">skills:</span>
-                <span className="text-gray-400">{`['`}</span>
-                <span className="text-amber-300">React</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">NextJS</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">HTML</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">CSS</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">Tailwind</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">NodeJS</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">Express</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">Javascript</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">Python</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">C#</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">SPSS</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">R</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">NoSQL</span>
-                <span className="text-gray-400">{"', '"}</span>
-                <span className="text-amber-300">MATLAB</span>
-                <span className="text-gray-400">{"', '"}</span>
 
-                <span className="text-amber-300">Visual Basic</span>
-                <span className="text-gray-400">{"'],"}</span>
-              </div>
+              {/* Object.entries döngüsü aynı kalıyor, sadece renkler güncellenecek */}
+              {Object.entries(coder).map(([key, value]) => {
+                const indent = "ml-4 lg:ml-8";
+
+                if (Array.isArray(value)) {
+                  return (
+                    <div key={key} className={indent}>
+                      <span className="dark:text-white text-black">{key}:</span>{" "}
+                      <span className="text-gray-600 dark:text-gray-400">
+                        [
+                      </span>
+                      <div className="ml-4">
+                        {value.map((item, i) =>
+                          typeof item === "string" ? (
+                            <span
+                              key={i}
+                              className="text-amber-700 dark:text-amber-300"
+                            >
+                              {i > 0 && (
+                                <span className="text-gray-600 dark:text-gray-400">
+                                  {"', '"}
+                                </span>
+                              )}
+                              {item}
+                            </span>
+                          ) : typeof item === "object" && item !== null ? (
+                            <div key={i} className="ml-4">
+                              <span className="text-gray-600 dark:text-gray-400">
+                                {"{"}
+                              </span>
+                              {Object.entries(item).map(([k, v], j) => (
+                                <span key={j}>
+                                  <span className="text-black dark:text-white ml-2">
+                                    {k}:
+                                  </span>{" "}
+                                  <span className="text-gray-600 dark:text-gray-400">
+                                    '
+                                  </span>
+                                  <span className="text-amber-700 dark:text-amber-300">
+                                    {String(v)}
+                                  </span>
+                                  <span className="text-gray-600 dark:text-gray-400">
+                                    ',
+                                  </span>
+                                </span>
+                              ))}
+                              <span className="text-gray-600 dark:text-gray-400">
+                                {" },"}
+                              </span>
+                            </div>
+                          ) : null
+                        )}
+                      </div>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        ],
+                      </span>
+                    </div>
+                  );
+                }
+
+                if (
+                  key === "skills" &&
+                  typeof value === "object" &&
+                  value !== null
+                ) {
+                  return (
+                    <div key={key} className={indent}>
+                      <span className="dark:text-white text-black">
+                        skills:
+                      </span>{" "}
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {"{"}
+                      </span>
+                      {Object.entries(value).map(([cat, arr], ci) => (
+                        <div key={ci} className="ml-4">
+                          <span className="dark:text-white text-black">
+                            {cat}:
+                          </span>{" "}
+                          <span className="text-gray-600 dark:text-gray-400">
+                            [
+                          </span>
+                          {arr.map((skill, si) => (
+                            <span
+                              key={si}
+                              className="text-amber-700 dark:text-amber-300"
+                            >
+                              {si > 0 && (
+                                <span className="text-gray-600 dark:text-gray-400">
+                                  {"', '"}
+                                </span>
+                              )}
+                              {skill}
+                            </span>
+                          ))}
+                          <span className="text-gray-600 dark:text-gray-400">
+                            ],
+                          </span>
+                        </div>
+                      ))}
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {"},"}
+                      </span>
+                    </div>
+                  );
+                }
+
+                if (typeof value === "function") {
+                  return (
+                    <div key={key} className={indent}>
+                      <span className="text-black dark:text-white">{key}:</span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        {String(value())},
+                      </span>
+                    </div>
+                  );
+                }
+
+                if (typeof value === "boolean") {
+                  return (
+                    <div key={key} className={indent}>
+                      <span className="text-black dark:text-white">{key}:</span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        {String(value)},
+                      </span>
+                    </div>
+                  );
+                }
+
+                if (typeof value === "object" && value !== null) {
+                  return (
+                    <div key={key} className={indent}>
+                      <span className="text-black dark:text-white">{key}:</span>{" "}
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {"{"}
+                      </span>
+                      {Object.entries(value).map(([k, v], j) => (
+                        <div key={j} className="ml-4">
+                          <span className="text-black dark:text-white">
+                            {k}:
+                          </span>{" "}
+                          <span className="text-gray-600 dark:text-gray-400">
+                            '
+                          </span>
+                          <span className="text-amber-700 dark:text-amber-300">
+                            {String(v)}
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            ',
+                          </span>
+                        </div>
+                      ))}
+                      <span className="text-gray-600 dark:text-gray-400 ml-4">
+                        {"},"}
+                      </span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={key} className={indent}>
+                    <span className="text-black dark:text-white">{key}:</span>{" "}
+                    <span className="text-amber-700 dark:text-amber-300">
+                      '{String(value)}',
+                    </span>
+                  </div>
+                );
+              })}
+
               <div>
-                <span className="ml-4 lg:ml-8 mr-2 text-white">
-                  hardWorker:
-                </span>
-                <span className="text-orange-400">true</span>
-                <span className="text-gray-400">,</span>
-              </div>
-              <div>
-                <span className="ml-4 lg:ml-8 mr-2 text-white">
-                  quickLearner:
-                </span>
-                <span className="text-orange-400">true</span>
-                <span className="text-gray-400">,</span>
-              </div>
-              <div>
-                <span className="ml-4 lg:ml-8 mr-2 text-white">
-                  problemSolver:
-                </span>
-                <span className="text-orange-400">true</span>
-                <span className="text-gray-400">,</span>
-              </div>
-              <div>
-                <span className="ml-4 lg:ml-8 mr-2 text-white">isStudent:</span>
-                <span className="text-orange-400">true</span>
-                <span className="text-gray-400">,</span>
-              </div>
-              {/* <div>
-                <span className="ml-4 lg:ml-8 mr-2 text-green-400">
-                  hireable:
-                </span>
-                <span className="text-orange-400">function</span>
-                <span className="text-gray-400">{"() {"}</span>
-              </div>
-              <div>
-                <span className="ml-8 lg:ml-16 mr-2 text-orange-400">
-                  return
-                </span>
-                <span className="text-gray-400">{`(`}</span>
-              </div> */}
-              {/* <div>
-                <span className="ml-12 lg:ml-24 text-cyan-400">this.</span>
-                <span className="mr-2 text-white">hardWorker</span>
-                <span className="text-amber-300">&amp;&amp;</span>
-              </div>
-              <div>
-                <span className="ml-12 lg:ml-24 text-cyan-400">this.</span>
-                <span className="mr-2 text-white">problemSolver</span>
-                <span className="text-amber-300">&amp;&amp;</span>
-              </div>
-              <div>
-                <span className="ml-12 lg:ml-24 text-cyan-400">this.</span>
-                <span className="mr-2 text-white">skills.length</span>
-                <span className="mr-2 text-amber-300">&gt;=</span>
-                <span className="text-orange-400">5</span>
-              </div> */}
-              {/* <div>
-                <span className="ml-12 lg:ml-24 text-white">!</span>
-                <span className="text-cyan-400">this.</span>
-                <span className="mr-2 text-white">isStudent</span>
-              </div> */}
-              {/* <div>
-                <span className="ml-8 lg:ml-16 mr-2 text-gray-400">{`);`}</span>
-              </div>
-              <div>
-                <span className="ml-4 lg:ml-8 text-gray-400">{`};`}</span>
-              </div> */}
-              <div>
-                <span className="text-gray-400">{`};`}</span>
+                <span className="text-gray-600 dark:text-gray-400">{"};"}</span>
               </div>
             </code>
           </div>
