@@ -27,7 +27,7 @@ export const personalData = {
     experienceYears: 3,
 
     skills: {
-      statistics: ["R", "SPSS", "MATLAB", "Excel"],
+      statistics: ["R", "SPSS", "MATLAB", "Eviews", "Excel"],
       web: ["HTML", "CSS", "Tailwind", "React", "NextJS", "NodeJS", "Express"],
       programming: ["Javascript", "Typescript", "Python", "C#", "Visual Basic"],
       embedded: ["Arduino", "Raspberry Pi", "C++", "ESP32"],
