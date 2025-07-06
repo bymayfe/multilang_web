@@ -32,7 +32,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </Head>
       <body>
-        <ThemeHandler>
+        <ThemeHandler
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthProvider>{children}</AuthProvider>
           <Analytics />
         </ThemeHandler>
