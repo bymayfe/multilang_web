@@ -34,7 +34,7 @@ function HeroSection() {
             This is <span className=" text-pink-500">{personalData.name}</span>
             {/* {` , I'm a Professional `} */}
             {/* <span className=" text-[#16f2b3]">{personalData.designation}</span>. */}
-            <p className="h-10 text-3xl md:text-3xl max-sm:text-xl mt-3 bg-clip-text text-transparent bg-gradient-to-r from-[#00040f] to-slate-500 dark:from-slate-500 dark:to-slate-200 max-w-[80%] md:max-w-[490px] text-left">
+            <p className="h-10 text-3xl md:text-3xl max-sm:text-xl mt-3 bg-clip-text text-transparent bg-gradient-to-r from-[#00040f] to-slate-500 dark:from-slate-500 dark:to-slate-200 max-w-[97%] md:max-w-[600px] text-left">
               I am a{" "}
               <span className="text-3xl md:text-3xl max-sm:text-xl bg-clip-text text-[#16f2b3] font-bold -z-50">
                 {typeEffect}
