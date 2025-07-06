@@ -27,15 +27,14 @@ export const personalData = {
     experienceYears: 3,
 
     skills: {
-      statistics: ["R", "SPSS", "MATLAB"],
+      statistics: ["R", "SPSS", "MATLAB", "Excel"],
       web: ["HTML", "CSS", "Tailwind", "React", "NextJS", "NodeJS", "Express"],
-      programming: ["Javascript", "Python", "C#", "Visual Basic"],
-      embedded: ["Arduino", "Raspberry Pi", "C", "ESP32"],
+      programming: ["Javascript", "Typescript", "Python", "C#", "Visual Basic"],
+      embedded: ["Arduino", "Raspberry Pi", "C++", "ESP32"],
       gameDev: [
         "Unreal Engine 5",
         "Blueprint",
         "VR Game Design",
-        "SteamVR",
         "Meta Quest 3",
       ],
     },
