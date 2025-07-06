@@ -1,15 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import React from "react";
-import Head from "next/head";
-
 import "./globals.css";
 import "./homepage.css";
-
 import mayfeNewLogo from "@/images/logos/mayfeLogoPNG_Pink.png";
-import ThemeHandler from "@/providers/ThemeProvider";
+import ThemeProvider from "@/providers/ThemeProvider";
 import AuthProvider from "@/providers/AuthProviders";
 
+// ✅ Title ve icon bilgileri burada
 export const metadata: Metadata = {
   title: "ByMayFe",
   description: "ByMayFe's personal website",
@@ -18,30 +16,35 @@ export const metadata: Metadata = {
   },
 };
 
+// ✅ Viewport bilgisi artık metadata'da değil, ayrı export
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 interface RootLayoutProps {
   children: React.ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html suppressHydrationWarning lang="en">
-      <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-        />
-      </Head>
-      <body>
-        <ThemeHandler
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AuthProvider>{children}</AuthProvider>
-          <Analytics />
-        </ThemeHandler>
-      </body>
-    </html>
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem={true}
+            disableTransitionOnChange={true}
+          >
+            <AuthProvider>{children}</AuthProvider>
+            <Analytics />
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }

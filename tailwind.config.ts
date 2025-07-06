@@ -1,5 +1,6 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -35,12 +36,12 @@ module.exports = {
         },
 
         bgStats: {
-          "0%": { "background-position": "0% 50%" },
-          "50%": { "background-position": "100% 50%" },
-          "100%": { "background-position": "0% 50%" },
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
         },
         marquee: {
-          "0%": { transform: "translate(%50, 0)" },
+          "0%": { transform: "translate(50%, 0)" },
           "100%": { transform: "translate(-100%, 0)" },
 
           // "0%, 20%": { transform: "translate(0%, 0)" },
@@ -51,3 +52,5 @@ module.exports = {
   },
   plugins: [],
 };
+
+export default nextConfig;
