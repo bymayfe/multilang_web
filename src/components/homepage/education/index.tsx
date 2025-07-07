@@ -20,7 +20,7 @@ function Education() {
   return (
     <div
       id="education"
-      className="relative border-t my-12 lg:my-24 border-gray-300 dark:border-[#25213b] bg-gray-50 dark:bg-[#0d1224]" // ✨ değişiklik: arka plan ve border tema uyumlu hale getirildi
+      className="relative border-t my-12 lg:my-24 border-gray-300 dark:border-[#25213b] bg-gray-50 dark:bg-[#0d1224] px-5" // ✨ değişiklik: arka plan ve border tema uyumlu hale getirildi
       data-aos="fade-down"
     >
       <Image

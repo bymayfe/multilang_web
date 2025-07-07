@@ -17,7 +17,7 @@ const Projects = () => {
   return (
     <div
       id="projects"
-      className="relative my-12 lg:my-24 bg-gray-50 dark:bg-[#0d1224]" // 🔧 Arka plan tema uyumlu şekilde eklendi
+      className="relative my-12 lg:my-24 bg-gray-50 dark:bg-[#0d1224] py-5" // 🔧 Arka plan tema uyumlu şekilde eklendi
       data-aos="fade-up"
     >
       <Image

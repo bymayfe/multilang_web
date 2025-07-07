@@ -20,7 +20,7 @@ function Skills({ skills }: { skills: Skill[] }) {
   return (
     <div
       id="skills"
-      className="relative border-t my-12 lg:my-24 border-gray-300 dark:border-[#25213b] bg-gray-50 dark:bg-[#0d1224]" // 🔧 Arka plan ve border tema duyarlı
+      className="relative border-t my-12 lg:my-24 border-gray-300 dark:border-[#25213b] bg-gray-50 dark:bg-[#0d1224] px-5" // 🔧 Arka plan ve border tema duyarlı
     >
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <Image

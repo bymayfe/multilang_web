@@ -21,7 +21,7 @@ function Experience() {
   return (
     <div
       id="experience"
-      className="relative border-t my-12 lg:my-24 border-gray-300 dark:border-[#25213b] bg-gray-50 dark:bg-[#0d1224]" // 🔧 Tema uyumlu arka plan ve border
+      className="relative border-t my-12 lg:my-24 border-gray-300 dark:border-[#25213b] bg-gray-50 dark:bg-[#0d1224] px-5" // 🔧 Tema uyumlu arka plan ve border
       data-aos="fade-up"
     >
       <Image
