@@ -15,9 +15,6 @@ import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-import Image from "next/image";
-import sectionSVG from "@/images/svg/section.svg"; // 🔧 Arka plan görseli import edildi
-
 function ContactSection() {
   useEffect(() => {
     AOS.init();
@@ -26,17 +23,9 @@ function ContactSection() {
   return (
     <div
       id="contact"
-      className="my-12 lg:my-16 relative mt-24 bg-gray-50 dark:bg-[#0d1224] text-gray-800 dark:text-white w-full"
+      className="my-12 lg:my-16 relative mt-24 dark:bg-[#0d1224] text-gray-800 dark:text-white w-full"
       data-aos="fade-up"
     >
-      <Image
-        src={sectionSVG}
-        alt="Section Background"
-        width={1572}
-        height={795}
-        className="absolute top-0 -z-10"
-      />{" "}
-      {/* 🔧 Görsel arka plan olarak yerleştirildi */}
       <div
         className="hidden lg:flex flex-col items-center absolute top-24 -right-8"
         data-aos="fade-up"
