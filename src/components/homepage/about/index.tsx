@@ -5,53 +5,33 @@ import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-import sectionSVG from "@/images/svg/section.svg"; // 🔧 Arka plan görseli eklendi
-
 function AboutSection() {
   useEffect(() => {
     AOS.init();
   }, []);
-
   return (
-    <div
-      id="about"
-      className="my-12 lg:my-16 relative bg-gray-50 dark:bg-[#0d1224]" // 🔧 arka plan tema uyumlu hale getirildi
-      data-aos="fade-down"
-    >
-      <Image
-        src={sectionSVG}
-        alt="Section Background"
-        width={1572}
-        height={795}
-        className="absolute top-0 -z-10"
-      />{" "}
-      {/* 🔧 SVG arka plan görseli yerleştirildi */}
+    <div id="about" className="my-12 lg:my-16 relative" data-aos="fade-down">
       <div
         className="hidden lg:flex flex-col items-center absolute top-16 -right-8"
         data-aos="fade-left"
       >
-        <span className="bg-white dark:bg-[#1a1443] text-gray-800 dark:text-white w-fit rotate-90 p-2 px-5 text-xl rounded-md shadow-sm">
-          {/* 🔧 başlık kutusu tema uyumlu */}
+        <span className="bg-gray-200 dark:bg-[#1a1443] text-gray-800 dark:text-white rotate-90 px-5 py-2 text-xl rounded-md shadow-sm">
           ABOUT ME
         </span>
-        <span className="h-36 w-[2px] bg-gray-300 dark:bg-[#1a1443]" />
-        {/* 🔧 çizgi tema uyumlu */}
+        <span className="h-36 w-[2px] bg-[#1a1443]"></span>
       </div>
       <div
         className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16"
         data-aos="fade-up"
       >
         <div className="order-2 lg:order-1">
-          <p className="font-medium mb-5 text-teal-600 dark:text-[#16f2b3] text-xl uppercase">
-            {/* 🔧 vurgu rengi tema uyumlu */}
+          <p className="font-medium mb-5 text-[#16f2b3] text-xl uppercase">
             Who I am?
           </p>
-          <p className="text-gray-800 dark:text-gray-200 text-sm lg:text-lg">
-            {/* 🔧 açıklama metni renkleri tema uyumlu */}
+          <p className="dark:text-gray-200 text-black text-sm lg:text-lg">
             {personalData.description}
           </p>
         </div>
-
         <div className="flex justify-center order-1 lg:order-2">
           <Image
             src={personalData.profile}
