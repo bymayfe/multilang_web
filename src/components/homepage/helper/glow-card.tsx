@@ -8,7 +8,7 @@ interface GlowCardProps {
 
 const GlowCard = ({ children, identifier }: GlowCardProps) => {
   useEffect(() => {
-    // 🔧 Tip eklendi: Elementler HTMLElement olacak şekilde tiplendi
+    // 🔧 Tip eklendi: Elementler HTMLElement olarak tiplendi
     const CONTAINER = document.querySelector(
       `.glow-container-${identifier}`
     ) as HTMLElement | null;
@@ -37,10 +37,9 @@ const GlowCard = ({ children, identifier }: GlowCardProps) => {
           event.y > CARD_BOUNDS.top - CONFIG.proximity &&
           event.y < CARD_BOUNDS.top + CARD_BOUNDS.height + CONFIG.proximity
         ) {
-          // 🔧 Sayısal değer string'e dönüştürüldü
-          CARD.style.setProperty("--active", "1");
+          CARD.style.setProperty("--active", "1"); // 🔧 string olarak ayarlandı
         } else {
-          CARD.style.setProperty("--active", CONFIG.opacity.toString()); // 🔧 Tip uyumu için toString()
+          CARD.style.setProperty("--active", CONFIG.opacity.toString()); // 🔧 Tip uyumu
         }
 
         const CARD_CENTER = [
@@ -55,14 +54,14 @@ const GlowCard = ({ children, identifier }: GlowCardProps) => {
 
         ANGLE = ANGLE < 0 ? ANGLE + 360 : ANGLE;
 
-        CARD.style.setProperty("--start", (ANGLE + 90).toString()); // 🔧 Sayısal değer string yapıldı
+        CARD.style.setProperty("--start", (ANGLE + 90).toString()); // 🔧 string dönüşümü
       }
     };
 
     document.body.addEventListener("pointermove", UPDATE);
 
     const RESTYLE = () => {
-      if (!CONTAINER) return; // 🔧 CONTAINER null olabilir, güvenlik kontrolü eklendi
+      if (!CONTAINER) return; // 🔒 null kontrolü
       CONTAINER.style.setProperty("--gap", CONFIG.gap.toString());
       CONTAINER.style.setProperty("--blur", CONFIG.blur.toString());
       CONTAINER.style.setProperty("--spread", CONFIG.spread.toString());
@@ -74,9 +73,6 @@ const GlowCard = ({ children, identifier }: GlowCardProps) => {
 
     RESTYLE();
 
-    // (Opsiyonel) İlk değerleri uygulamak için simüle pointer event — aktif et istersen
-    // UPDATE(new PointerEvent("pointermove", { bubbles: true }));
-
     return () => {
       document.body.removeEventListener("pointermove", UPDATE);
     };
@@ -85,7 +81,8 @@ const GlowCard = ({ children, identifier }: GlowCardProps) => {
   return (
     <div className={`glow-container-${identifier} glow-container`}>
       <article
-        className={`glow-card glow-card-${identifier} h-fit cursor-pointer border border-[#2a2e5a] transition-all duration-300 relative bg-[#101123] text-gray-200 rounded-xl hover:border-transparent w-full`}
+        className={`glow-card glow-card-${identifier} h-fit cursor-pointer border border-gray-300 dark:border-[#2a2e5a] transition-all duration-300 relative bg-white dark:bg-[#101123] text-gray-800 dark:text-gray-200 rounded-xl hover:border-transparent w-full`}
+        // ✨ renkler dark/light uyumlu hale getirildi
       >
         <div className="glows"></div>
         {children}
