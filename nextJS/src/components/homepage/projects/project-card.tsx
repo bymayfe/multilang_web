@@ -6,6 +6,8 @@ interface ProjectCardProps {
 }
 
 function ProjectCard({ project }: ProjectCardProps) {
+  const [isOpen, setIsOpen] = React.useState(true);
+
   const orderedKeys = [
     "name",
     "mainLanguage",
@@ -30,27 +32,35 @@ function ProjectCard({ project }: ProjectCardProps) {
   ];
 
   return (
-    <div className="from-[#f9fafb] to-white dark:from-[#0d1224] dark:to-[#0a0d37] border border-gray-200 dark:border-[#1b2c68a0] rounded-lg bg-gradient-to-r w-full">
-      {/* Dekoratif çizgiler */}
-      <div className="flex flex-row">
-        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-pink-500 to-violet-600" />
-        <div className="h-[1px] w-full bg-gradient-to-r from-violet-600 to-transparent" />
-      </div>
-
-      {/* Başlık */}
-      <div className="px-4 lg:px-8 py-3 lg:py-5 relative">
-        <div className="flex flex-row space-x-1 lg:space-x-2 absolute top-1/2 -translate-y-1/2">
+    <div className="from-[#f9fafb] to-white dark:from-[#0d1224] dark:to-[#0a0d37] border border-gray-200 dark:border-[#1b2c68a0] rounded-lg bg-gradient-to-r w-full relative">
+      {/* Başlık ve toggle butonu */}
+      <div className="flex items-center justify-between px-4 lg:px-8 py-3 lg:py-5 relative">
+        <div className="flex flex-row space-x-1 lg:space-x-2 items-center">
           <div className="h-2 w-2 lg:h-3 lg:w-3 rounded-full bg-red-400" />
           <div className="h-2 w-2 lg:h-3 lg:w-3 rounded-full bg-orange-400" />
           <div className="h-2 w-2 lg:h-3 lg:w-3 rounded-full bg-green-200" />
+          <p className="ml-3 text-[#0d9488] dark:text-[#16f2b3] text-base lg:text-xl font-semibold">
+            {project.name}
+          </p>
         </div>
-        <p className="text-center ml-3 text-[#0d9488] dark:text-[#16f2b3] text-base lg:text-xl">
-          {project.name}
-        </p>
+
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          aria-expanded={isOpen}
+          aria-controls={`project-content-${project.name}`}
+          className="px-3 py-1 bg-violet-600 text-white rounded-md shadow hover:bg-violet-700 transition"
+        >
+          {isOpen ? "Hide" : "Show"}
+        </button>
       </div>
 
       {/* İçerik */}
-      <div className="overflow-hidden border-t-[2px] border-indigo-200 dark:border-indigo-900 px-4 lg:px-8 py-4 lg:py-8">
+      <div
+        id={`project-content-${project.name}`}
+        className={`overflow-hidden border-t-[2px] border-indigo-200 dark:border-indigo-900 px-4 lg:px-8 py-4 lg:py-8 transition-all duration-500
+        ${isOpen ? "max-h-[3000px] opacity-100" : "max-h-0 opacity-0"}`}
+        style={{ transitionProperty: "max-height, opacity" }}
+      >
         <code className="font-mono text-xs md:text-sm lg:text-base">
           <div className="blink">
             <span className="mr-2 text-pink-500">const</span>
