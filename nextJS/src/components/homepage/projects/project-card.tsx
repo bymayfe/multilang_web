@@ -57,81 +57,74 @@ function ProjectCard({ project }: ProjectCardProps) {
       {/* İçerik */}
       <div
         id={`project-content-${project.name}`}
-        className={`overflow-hidden border-t-[2px] border-indigo-200 dark:border-indigo-900 px-4 lg:px-8 py-4 lg:py-8 transition-all duration-500
-        ${isOpen ? "max-h-[3000px] opacity-100" : "max-h-0 opacity-0"}`}
+        className={`overflow-hidden border-t-[2px] border-indigo-200 dark:border-indigo-900 px-4 lg:px-8 py-4 lg:py-8 transition-all duration-500 ${
+          isOpen ? "max-h-[3000px] opacity-100" : "max-h-0 opacity-0"
+        }`}
         style={{ transitionProperty: "max-height, opacity" }}
       >
-        <code className="font-mono text-xs md:text-sm lg:text-base">
-          <div className="blink">
-            <span className="mr-2 text-pink-500">const</span>
-            <span className="mr-2 text-gray-800 dark:text-white">project</span>
-            <span className="mr-2 text-pink-500">=</span>
-            <span className="text-gray-500 dark:text-gray-400">{"{"}</span>
-          </div>
-
+        <pre className="whitespace-pre-wrap font-mono text-xs md:text-sm lg:text-base text-gray-800 dark:text-white">
+          <span className="text-pink-500">const</span>{" "}
+          <span className="text-white">project</span>{" "}
+          <span className="text-pink-500">=</span>{" "}
+          <span className="text-gray-500">{"{"}</span>
+          {"\n"}
           {orderedKeys.map((key, i) =>
             project[key] !== "" && project[key] !== undefined ? (
-              <div key={i} className="ml-4 lg:ml-8 mr-2">
-                <span className="text-gray-800 dark:text-white">{key}:</span>{" "}
+              <span key={i} className="ml-4 block">
+                <span className="text-white">{key}</span>:{" "}
                 {Array.isArray(project[key]) ? (
                   <>
-                    <span className="text-gray-500 dark:text-gray-400">[</span>
+                    <span className="text-gray-500">[</span>
                     {project[key].map((item: string, idx: number) => (
                       <React.Fragment key={idx}>
-                        <span className="text-amber-500 dark:text-amber-300">{`'${item}'`}</span>
+                        <span className="text-amber-500">{`'${item}'`}</span>
                         {idx < project[key].length - 1 && (
-                          <span className="text-gray-500 dark:text-gray-400">
-                            ,{" "}
-                          </span>
+                          <span className="text-gray-500">, </span>
                         )}
                       </React.Fragment>
                     ))}
-                    <span className="text-gray-500 dark:text-gray-400">]</span>
+                    <span className="text-gray-500">]</span>
                   </>
                 ) : (
-                  <span className="text-cyan-600 dark:text-cyan-400">{` '${project[key]}'`}</span>
+                  <span className="text-cyan-400">{` '${project[key]}'`}</span>
                 )}
-                <span className="text-gray-500 dark:text-gray-400">,</span>
-              </div>
+                <span className="text-gray-500">,</span>
+                {"\n"}
+              </span>
             ) : null
           )}
-
-          {/* GitHub */}
           {project.github && (
-            <div className="ml-4 lg:ml-8 mr-2">
-              <span className="text-gray-800 dark:text-white">github:</span>{" "}
+            <span className="ml-4 block">
+              github:{" "}
               <Link
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-green-600 dark:text-green-400 hover:underline"
+                className="text-green-400 underline"
               >
-                {" " + project.github.replace("https://", "")}
+                {project.github.replace("https://", "")}
               </Link>
-              <span className="text-gray-500 dark:text-gray-400">,</span>
-            </div>
+              <span className="text-gray-500">,</span>
+              {"\n"}
+            </span>
           )}
-
-          {/* Live */}
           {project.live && (
-            <div className="ml-4 lg:ml-8 mr-2">
-              <span className="text-red-500">LIVE:</span>{" "}
+            <span className="ml-4 block">
+              <span className="text-red-400">LIVE</span>:{" "}
               <Link
                 href={project.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-green-600 dark:text-green-400 hover:underline"
+                className="text-green-400 underline"
               >
-                {" " + project.live.replace("https://", "")}
+                {project.live.replace("https://", "")}
               </Link>
-              <span className="text-gray-500 dark:text-gray-400">,</span>
-            </div>
+              <span className="text-gray-500">,</span>
+              {"\n"}
+            </span>
           )}
-
-          <div>
-            <span className="text-gray-500 dark:text-gray-400">{"};"}</span>
-          </div>
-        </code>
+          <span className="text-gray-500">{"};"}</span>
+        </pre>
       </div>
     </div>
   );
