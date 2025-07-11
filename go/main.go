@@ -1,46 +1,23 @@
-// // pring hello world
-// package main
-// import "fmt"
-// func main() {
-// 	fmt.Println("Hello, World!")
-// }
+// 🏁 Bu dosya uygulamanin giriş noktasidir.
+// Mongo bağlantisini başlatir ve router üzerinden sunucuyu ayağa kaldirir.
 
-// basic port 3001 server hollo world
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+
+	"multilang_web/routes"
 )
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello, World!")
-}
+
 func main() {
-	http.HandleFunc("/", helloHandler)
-	fmt.Println("🚀 Server is running on port 3001")
-	if err := http.ListenAndServe(":3001", nil); err != nil {
-		fmt.Println("Error starting server:", err)
-	}
+	// 🔌 MongoDB bağlantisini başlat
+	routes.InitMongo()
+
+	// 🛣 Router'i kur
+	router := routes.SetupRouter()
+
+	// 🚀 Sunucuyu çaliştir
+	log.Println("Sunucu http://localhost:3001 adresinde calisiyor")
+	log.Fatal(http.ListenAndServe(":3001", router))
 }
-// This is a basic HTTP server that listens on port 3001 and responds with "Hello, World!" to any request.
-
-// // main.go
-// package main
-
-// import (
-// 	"fmt"
-// 	"net/http"
-// )
-
-// func handler(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprintf(w, "Hello World")
-// }
-
-// func main() {
-// 	http.HandleFunc("/", handler)
-// 	fmt.Println("🚀 Sunucu çalışıyor: http://localhost:3001")
-// 	err := http.ListenAndServe(":3001", nil)
-// 	if err != nil {
-// 		fmt.Println("Hata oluştu:", err)
-// 	}
-// }
