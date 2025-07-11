@@ -30,9 +30,12 @@
 /nextjs/yarn-error.log*
 /nextjs/.pnpm-debug.log*
 
-# env files
+# env files @nextjs
 /nextjs/.env*
 /nextjs/next-env.d.ts
+
+# env files @go
+/go/.env
 
 # vercel
 /nextjs/.vercel
