@@ -59,6 +59,16 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🧾 Gelen veriyi konsola yaz
 	log.Printf("📥 Signup isteği alındı: %+v\n", user)
 
+	// Email daha önce kaydedilmiş mi kontrol et
+	var existingUser models.User
+	err := userCollection.FindOne(context.TODO(), bson.M{"email": user.Email}).Decode(&existingUser)
+	if err == nil {
+		http.Error(w, "Bu email zaten kayıtlı", http.StatusConflict)
+		return	
+	} 
+
+	// 🧹 Email ve şifre kontrolü
+
 	hashedPwd, err := utils.HashPassword(user.Password)
 	if err != nil {
 		http.Error(w, "Şifre hashlenemedi", http.StatusInternalServerError)

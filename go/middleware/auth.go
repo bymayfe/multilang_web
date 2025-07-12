@@ -3,18 +3,31 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
-
-// 🧪 Gizli anahtar — gerçek projede ortam değişkeni (.env) ile kullanman önerilir!
-var jwtKey = []byte("super-secret-key")
 
 // 🛡️ AuthMiddleware: Korunan endpoint'lere gelen istekleri kontrol eden middleware
 // İşlev: Authorization header içindeki JWT token'ı çözümleyip doğrular.
 func AuthMiddleware(next http.Handler) http.Handler {
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("'.env' dosyasi yüklenemedi: ", err)
+	}
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET ortam değişkeni tanimlanmali.")
+	}
+
+    var jwtKey = []byte(jwtSecret)
+
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // 🚪 Authorization header'ı alıyoruz (örnek: "Bearer <token>")
         authHeader := r.Header.Get("Authorization")

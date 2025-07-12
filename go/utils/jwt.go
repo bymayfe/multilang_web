@@ -1,19 +1,27 @@
-// 🔑 JWT token üretimi
 package utils
 
 import (
+	"log"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
-var jwtKey = []byte("super-secret-key")
-
 func GenerateJWT(email string) (string, error) {
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-        "email": email,
-        "exp":   time.Now().Add(time.Hour * 72).Unix(),
-    })
+	_ = godotenv.Load(".env")
 
-    return token.SignedString(jwtKey)
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		log.Fatal("JWT_SECRET tanımlı değil.")
+	}
+
+	claims := jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(72 * time.Hour).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(secret))
 }
