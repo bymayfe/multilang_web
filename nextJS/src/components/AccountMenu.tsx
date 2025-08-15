@@ -116,15 +116,13 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
 
       try {
         const userData = await fetchSession(token);
-        console.log("Session verisi1111:", userData);
+        // console.log("Session verisi1111:", userData);
         setSession({ user: userData, isAuthenticated: true });
       } catch (err) {
         console.error("🚫 Session doğrulama hatası:", err);
         setSession({ user: null, isAuthenticated: false });
         localStorage.removeItem("token");
       }
-
-      console.log("Session verisi22222:", session);
     };
     getSession(); // sayfa yüklenince token doğrula
   }, []);
