@@ -8,6 +8,7 @@ import { FaSpotify } from "react-icons/fa";
 import { RiLoginCircleLine, RiLogoutCircleRLine } from "react-icons/ri";
 import Image from "next/image";
 
+import { fetchSession } from "@/scripts/services/auth";
 // 🔻 KALDIRILDI: NextAuth kullanılmıyor ama ileride alternatif auth gelirse tekrar eklenebilir
 // import { signOut, useSession } from "next-auth/react"; // 💡 auth sistemi eklendiğinde burası yeniden aktif edilecek
 
@@ -53,9 +54,34 @@ interface AccountMenuProps {
   data?: string;
 }
 
+interface User {
+  userID: number;
+  email: string;
+  role: string; // admin, user gibi roller
+  username?: string;
+  firstname?: string;
+  lastname?: string;
+  age?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  image?: string; // profil fotoğrafı varsa
+}
+
+interface Session {
+  user: User | null;
+  isAuthenticated: boolean;
+}
+
 const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  const [session, setSession] = useState<Session>({
+    user: null,
+    isAuthenticated: false,
+  });
+
   const [isLoaded, setIsLoaded] = useState(true);
 
   const buttonRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +90,7 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
   // const { data: session, status } = useSession(); // 💡 backend auth tamamlandığında yeniden eklenecek
 
   // 🔧 Şimdilik boş session objesi (Go veya başka sistemden alınacak veri buraya bağlanabilir)
-  const session: any = null;
+  // const session: any = null;
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -74,8 +100,41 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
     };
 
     window.addEventListener("click", handleClick);
-    return () => window.removeEventListener("click", handleClick);
+
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
   }, []);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSession({ user: null, isAuthenticated: false });
+        return;
+      }
+
+      try {
+        const userData = await fetchSession(token);
+        console.log("Session verisi1111:", userData);
+        setSession({ user: userData, isAuthenticated: true });
+      } catch (err) {
+        console.error("🚫 Session doğrulama hatası:", err);
+        setSession({ user: null, isAuthenticated: false });
+        localStorage.removeItem("token");
+      }
+
+      console.log("Session verisi22222:", session);
+    };
+    getSession(); // sayfa yüklenince token doğrula
+  }, []);
+
+  useEffect(() => {
+    console.log("Session güncellendi:", session);
+    if (session.isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [session]);
 
   // 🔻 KALDIRILDI: session.status kontrolü artık yok, ama benzeri logic Go auth geldiğinde tekrar eklenebilir
   /*
@@ -125,7 +184,7 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
                 if (item.requireAuth && !isAuthenticated) return null;
                 if (
                   item.role &&
-                  !item.role.includes(session?.user?.role?.toLowerCase?.())
+                  !item.role.includes(session?.user?.role?.toLowerCase() ?? "")
                 )
                   return null;
                 if (!item.showOnAuth && isAuthenticated) return null;

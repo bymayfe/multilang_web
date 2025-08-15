@@ -1,65 +1,73 @@
-// 📦 Bu dosya middleware paketini tanımlar.
-// Amaç: Gelen HTTP isteklerindeki Authorization header'ını kontrol edip token doğruluğunu teyit etmek.
 package middleware
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/golang-jwt/jwt/v5"
+	"multilang_web/utils"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+
 	"github.com/joho/godotenv"
 )
 
-// 🛡️ AuthMiddleware: Korunan endpoint'lere gelen istekleri kontrol eden middleware
-// İşlev: Authorization header içindeki JWT token'ı çözümleyip doğrular.
-func AuthMiddleware(next http.Handler) http.Handler {
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("'.env' dosyasi yüklenemedi: ", err)
-	}
-
+// AuthMiddlewareWithCollection artık collection parametresi alıyor
+func AuthMiddlewareWithCollection(collection *mongo.Collection, next http.Handler) http.Handler {
+	_ = godotenv.Load(".env")
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
-		log.Fatal("JWT_SECRET ortam değişkeni tanimlanmali.")
+		log.Fatal("JWT_SECRET ortam değişkeni tanımlı değil.")
 	}
 
-    var jwtKey = []byte(jwtSecret)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 🔹 Nil kontrolü
+		if collection == nil {
+			http.Error(w, "Database collection not initialized", http.StatusInternalServerError)
+			return
+		}
 
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // 🚪 Authorization header'ı alıyoruz (örnek: "Bearer <token>")
-        authHeader := r.Header.Get("Authorization")
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Authorization header eksik", http.StatusUnauthorized)
+			return
+		}
 
-        if authHeader == "" {
-            http.Error(w, "Authorization header eksik", http.StatusUnauthorized)
-            return
-        }
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			http.Error(w, "Authorization formatı hatalı", http.StatusUnauthorized)
+			return
+		}
+		tokenString := parts[1]
 
-        // 🧹 "Bearer <token>" yapısından sadece token'ı ayıklıyoruz
-        parts := strings.Split(authHeader, " ")
-        if len(parts) != 2 || parts[0] != "Bearer" {
-            http.Error(w, "Authorization formatı hatalı", http.StatusUnauthorized)
-            return
-        }
-        tokenString := parts[1]
+		claims, err := utils.ValidateJWT(tokenString)
+		if err != nil {
+			http.Error(w, "Geçersiz token", http.StatusUnauthorized)
+			return
+		}
 
-        // 🧾 Token'ı parse ediyoruz, doğruluğunu kontrol ediyoruz
-        token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-            // 🔒 Signing method kontrolü (HS256 olmalı)
-            if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-                return nil, http.ErrAbortHandler
-            }
-            return jwtKey, nil
-        })
+		// Kullanıcı hâlâ veritabanında var mı kontrol et
+		var result bson.M
+		err = collection.FindOne(r.Context(), bson.M{"userID": claims["userID"]}).Decode(&result)
+		if err != nil {
+			http.Error(w, "Kullanıcı bulunamadı (silinmiş olabilir)", http.StatusUnauthorized)
+			return
+		}
 
-        if err != nil || !token.Valid {
-            http.Error(w, "Geçersiz token", http.StatusUnauthorized)
-            return
-        }
+		// JWT'den gelen claims ile DB'den gelen user verisini merge et
+		mergedClaims := make(map[string]interface{})
+		for k, v := range claims {
+			mergedClaims[k] = v
+		}
+		for k, v := range result {
+			mergedClaims[k] = v // DB verisi, token verisinin üstüne yazacak
+		}
 
-        // ✅ Token geçerliyse, isteği bir sonraki handler'a yönlendiriyoruz
-        next.ServeHTTP(w, r)
-    })
+		// Tek bir context key ile ekle
+		ctx := context.WithValue(r.Context(), "claims", mergedClaims)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

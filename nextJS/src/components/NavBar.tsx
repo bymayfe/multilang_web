@@ -17,7 +17,7 @@ interface NavbarProps {
   //     name: string;
   //     href: string;
   //   }>;
-  menuList: MenuItem[];
+  menuList?: MenuItem[];
   className?: string;
 }
 

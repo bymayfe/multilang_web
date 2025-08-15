@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
 /* @custom-variant light (&:where(.light, .light *)); */
 /* :root {
   --background: #ffffff;
@@ -31,4 +32,37 @@ body {
   width: 100%;
   height: 100%;
   margin: 0px;
+}
+
+@theme {
+  --animate-rotateRing: rotateRing 6s linear infinite;
+  --animate-rotateRing2: rotateRing2 4s linear infinite;
+  --animate-rotateRingReverse: rotateRingReverse 10s linear infinite;
+
+  @keyframes rotateRing {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotateRing2 {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotateRingReverse {
+    0% {
+      transform: rotate(360deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
 }
