@@ -8,7 +8,7 @@ import { FaSpotify } from "react-icons/fa";
 import { RiLoginCircleLine, RiLogoutCircleRLine } from "react-icons/ri";
 import Image from "next/image";
 
-import { fetchSession } from "@/scripts/services/auth";
+import { fetchSession, signOut } from "@/scripts/services/auth";
 // 🔻 KALDIRILDI: NextAuth kullanılmıyor ama ileride alternatif auth gelirse tekrar eklenebilir
 // import { signOut, useSession } from "next-auth/react"; // 💡 auth sistemi eklendiğinde burası yeniden aktif edilecek
 
@@ -106,25 +106,74 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
     };
   }, []);
 
+  // component içi
+  // useEffect(() => {
+  //   const getSession = async () => {
+  //     localStorage.setItem("token", "dummy_token");
+  //     const token = localStorage.getItem("token");
+
+  //     if (!token) {
+  //       setSession({ user: null, isAuthenticated: false });
+  //       return;
+  //     }
+
+  //     // Beklenmedik hata gelirse burada throw olur ve Next dev overlay gösterir.
+  //     const result = await fetchSession(token);
+
+  //     if (result.success) {
+  //       setSession({ user: result.data, isAuthenticated: true });
+  //       return;
+  //     }
+
+  //     // ❌ Hata durumları (beklenenler)
+  //     if (result.status === 401) {
+  //       localStorage.removeItem("token");
+  //       setSession({ user: null, isAuthenticated: false });
+
+  //       // handleUnauthorized(result.message);
+  //     }
+  //     // else if (result.status === 403) {
+  //     //   // handleForbidden(result.message);
+  //     // } else if (result.status === 404) {
+  //     //   // handleNotFound(result.message);
+  //     // } else if (result.status === 429) {
+  //     //   // handleTooManyRequests(result.message);
+  //     // } else if (result.status >= 500) {
+  //     //   // handleServerError(result.message);
+  //     // } else {
+  //     //   // handleGenericError(result.message);
+  //     // }
+  //   };
+
+  //   getSession();
+  // }, []);
+
   useEffect(() => {
     const getSession = async () => {
+      // localStorage.setItem("token", "dummy_token");
       const token = localStorage.getItem("token");
+
       if (!token) {
         setSession({ user: null, isAuthenticated: false });
         return;
       }
 
-      try {
-        const userData = await fetchSession(token);
-        // console.log("Session verisi1111:", userData);
-        setSession({ user: userData, isAuthenticated: true });
-      } catch (err) {
-        console.error("🚫 Session doğrulama hatası:", err);
-        setSession({ user: null, isAuthenticated: false });
-        localStorage.removeItem("token");
+      const result = await fetchSession(token);
+
+      if (result.success) {
+        setSession({ user: result.data, isAuthenticated: true });
+      } else {
+        if (result.status === 401) {
+          localStorage.removeItem("token");
+          setSession({ user: null, isAuthenticated: false });
+        } else {
+          // beklenen hata (örn. sunucu kapalı veya 429 vs.)
+          // setError(result.message);
+        }
       }
     };
-    getSession(); // sayfa yüklenince token doğrula
+
+    getSession();
   }, []);
 
   useEffect(() => {
@@ -151,6 +200,13 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
 
   const handleAccountMenu = () => {
     setIsOpen((prev) => !prev);
+  };
+
+  const signOutFunction = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    localStorage.removeItem("token");
+    signOut(token);
   };
 
   return (
@@ -201,8 +257,9 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
 
               {isAuthenticated && (
                 <Link
-                  href="/logout" // 🔧 signOut yerine kendi çıkış yönlendirmen eklenecek
-                  // onClick={() => signOut()} // ❌ kaldırıldı, backend'e logout endpoint gelince düzenlenir
+                  // href="/logout"
+                  href="#"
+                  onClick={() => signOutFunction()}
                   className="flex flex-row justify-between cursor-pointer p-3 rounded-lg font-semibold hover:border-lime-300 border-l-transparent border-b-transparent border-b-4 border-l-4"
                 >
                   <h3 className="w-full mr-2">Sign Out</h3>

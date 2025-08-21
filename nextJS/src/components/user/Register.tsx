@@ -32,7 +32,6 @@ const Register = ({ className }: RegisterProps) => {
   const signInPage = () => {
     router.push("/user/login");
   };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -42,34 +41,25 @@ const Register = ({ className }: RegisterProps) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const registerData = {
-      firstname,
-      lastname,
-      email,
-      password,
-      // ...
-    };
+    const registerData = { firstname, lastname, email, password };
 
     try {
-      const res = await registerUser(registerData);
-      console.log("Registration response ASDFGASFASFSA:", res);
-      // Token sakla
-      localStorage.setItem("token", res.token);
+      const result = await registerUser(registerData);
 
-      setSuccess(true);
-      setError(null);
-
-      // 2 sn sonra home sayfasına yönlendir
-      setTimeout(() => {
-        // router.push("/user/login");
-        router.push("/home");
-      }, 2000);
+      if (result.success) {
+        localStorage.setItem("token", result.data.token);
+        setSuccess(true);
+        setError(null);
+        setTimeout(() => router.push("/home"), 2000);
+      } else {
+        setSuccess(false);
+        setError(result.message); // kullanıcıya göster
+      }
     } catch (err: any) {
-      console.error("Registration error:", err);
-      setError(err.message || "Registration failed");
-      setSuccess(false);
+      throw err; // beklenmedik → Next overlay
     }
   };
+
   if (!mounted) return null; // Prevents hydration mismatch
 
   return (
