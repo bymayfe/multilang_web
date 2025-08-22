@@ -13,43 +13,70 @@ const Login = ({ className }: LoginProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [hidden, setHidden] = useState(false);
-  //   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const { signIn, session } = useAuth();
 
   const toggleEye = () => setHidden((prev) => !prev);
 
   const goRegister = () => router.push("/user/register");
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = (e.currentTarget[0] as HTMLInputElement).value;
     const password = (e.currentTarget[1] as HTMLInputElement).value;
-    signIn("credential", email, password);
+
+    try {
+      const result = await signIn("credential", email, password);
+
+      if (result.success) {
+        setSuccess(true);
+        setError(null);
+
+        // 1.5-2 saniye success mesajı gösterip yönlendir
+        setTimeout(() => router.push("/"), 3000);
+      } else {
+        setSuccess(false);
+        setError(result.message || "Giriş başarısız");
+      }
+    } catch (err) {
+      setSuccess(false);
+      setError("Beklenmedik bir hata oluştu");
+      console.error("Login catch error:", err);
+    }
   };
 
-  const ErrCrd = searchParams.get("error")?.replace("Error: ", "");
-
-  // 🔑 eğer session varsa redirect
+  // 🔑 Eğer session varsa direkt redirect
   useEffect(() => {
     if (session?.token) {
-      router.push("/"); // burayı istersen dashboard yapabilirsin
+      router.push("/"); // istersen dashboard veya home
     }
   }, [session, router]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  // Eğer mount olmamış veya session varsa → null döndür
   if (!mounted || session?.token) return null;
+
+  const ErrCrd = searchParams.get("error")?.replace("Error: ", "");
 
   return (
     <div
       className={`flex flex-col absolute items-center justify-center dark:text-white text-black ${className}`}
     >
       <h2 className="text-5xl p-2 mb-6">Login</h2>
-      <h3>{ErrCrd}</h3>
+
+      {ErrCrd && (
+        <h3 className="font-bold text-red-500 mb-2 text-lg">{ErrCrd}</h3>
+      )}
+      {error && !success && (
+        <h3 className="font-bold text-red-500 mb-2 text-lg">{error}</h3>
+      )}
+      {success && (
+        <h3 className="font-bold text-green-500 mb-2 text-lg">
+          Başarıyla giriş yapıldı! Yönlendiriliyorsunuz...
+        </h3>
+      )}
 
       <form className="flex flex-col" onSubmit={handleSubmit}>
         <div className="border rounded-lg p-2 mb-2">
@@ -96,22 +123,11 @@ const Login = ({ className }: LoginProps) => {
               </span>
             </button>
           </div>
-          <button
-            className="cursor-not-allowed relative group overflow-hidden border-2 px-8 py-2 border-green-500 rounded-lg"
-            type="button"
-          >
-            <span className="font-bold text-lg relative z-10 group-hover:text-green-500 duration-500">
-              Spotify
-            </span>
-            <span className="absolute top-0 left-0 w-full bg-green-500 duration-500 group-hover:-translate-x-full h-full"></span>
-            <span className="absolute top-0 left-0 w-full bg-green-500 duration-500 group-hover:translate-x-full h-full"></span>
-            <span className="absolute top-0 left-0 w-full bg-green-500 duration-500 delay-300 group-hover:-translate-y-full h-full"></span>
-            <span className="absolute delay-300 top-0 left-0 w-full bg-green-500 duration-500 group-hover:translate-y-full h-full"></span>
-          </button>
         </div>
       </form>
-      <div className="flex flex-row">
-        <h2 className="text-lg mt-2 mr-2">Have'nt an account</h2>
+
+      <div className="flex flex-row mt-2">
+        <h2 className="text-lg mt-2 mr-2">Haven't an account?</h2>
         <button
           onClick={goRegister}
           className="relative hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0"
@@ -119,7 +135,7 @@ const Login = ({ className }: LoginProps) => {
           Register
         </button>
       </div>
-      <h3 className="hover:underline text-lg">Forgot your password?</h3>
+      <h3 className="hover:underline text-lg mt-2">Forgot your password?</h3>
     </div>
   );
 };

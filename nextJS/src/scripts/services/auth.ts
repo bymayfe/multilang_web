@@ -85,26 +85,66 @@ export async function signIn(email: string, password: string) {
 
     if (res.ok) return { success: true as const, data: json };
 
-    if ([400, 401, 403, 404, 429].includes(res.status) || res.status >= 500) {
-      return {
-        success: false as const,
-        status: res.status,
-        message:
-          json?.message || `Login failed: ${res.status} ${res.statusText}`,
-        data: json,
-      };
+    // Hata durumları için özel mesajlar
+    switch (res.status) {
+      case 400:
+        return {
+          success: false as const,
+          status: 400,
+          message: "Eksik veya hatalı giriş bilgileri",
+          data: json,
+        };
+      case 401:
+        return {
+          success: false as const,
+          status: 401,
+          message: "Hatalı e-posta veya şifre",
+          data: json,
+        };
+      case 403:
+        return {
+          success: false as const,
+          status: 403,
+          message: "Bu işlem için yetkiniz yok",
+          data: json,
+        };
+      case 404:
+        return {
+          success: false as const,
+          status: 404,
+          message: "Kullanıcı bulunamadı",
+          data: json,
+        };
+      case 429:
+        return {
+          success: false as const,
+          status: 429,
+          message: "Çok fazla giriş denemesi. Lütfen biraz bekleyin.",
+          data: json,
+        };
+      default:
+        if (res.status >= 500)
+          return {
+            success: false as const,
+            status: res.status,
+            message: "Sunucu hatası. Daha sonra tekrar deneyin.",
+            data: json,
+          };
+        return {
+          success: false as const,
+          status: res.status,
+          message:
+            json?.message || `Login failed: ${res.status} ${res.statusText}`,
+          data: json,
+        };
     }
-
-    throw new Error(
-      `Beklenmeyen login hatası: ${res.status} ${res.statusText}`
-    );
   } catch (err: any) {
     if (err instanceof TypeError && err.message === "Failed to fetch") {
       return {
         success: false as const,
         status: 0,
         message:
-          "Sunucuya ulaşılamıyor. Lütfen bağlantınızı veya sunucuyu kontrol edin.",
+          "Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı veya sunucuyu kontrol edin.",
         data: null,
       };
     }
@@ -133,16 +173,51 @@ export async function fetchSession(token: string) {
 
     if (res.ok) return { success: true as const, data };
 
-    if ([401, 403, 404, 429].includes(res.status) || res.status >= 500) {
-      return {
-        success: false as const,
-        status: res.status,
-        message: data?.message || `Hata: ${res.status} ${res.statusText}`,
-        data,
-      };
+    // Hata durumları için özel mesajlar
+    switch (res.status) {
+      case 401:
+        return {
+          success: false as const,
+          status: 401,
+          message: "Oturum geçersiz veya süresi dolmuş",
+          data,
+        };
+      case 403:
+        return {
+          success: false as const,
+          status: 403,
+          message: "Bu oturuma erişim yetkiniz yok",
+          data,
+        };
+      case 404:
+        return {
+          success: false as const,
+          status: 404,
+          message: "Oturum bulunamadı",
+          data,
+        };
+      case 429:
+        return {
+          success: false as const,
+          status: 429,
+          message: "Sunucuya çok fazla istek gönderildi. Lütfen bekleyin",
+          data,
+        };
+      default:
+        if (res.status >= 500)
+          return {
+            success: false as const,
+            status: res.status,
+            message: "Sunucu hatası. Daha sonra tekrar deneyin",
+            data,
+          };
+        return {
+          success: false as const,
+          status: res.status,
+          message: data?.message || `Hata: ${res.status} ${res.statusText}`,
+          data,
+        };
     }
-
-    throw new Error(`Beklenmeyen HTTP hatası: ${res.status} ${res.statusText}`);
   } catch (err: any) {
     if (err instanceof TypeError && err.message === "Failed to fetch") {
       return {

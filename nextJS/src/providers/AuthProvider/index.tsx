@@ -1,5 +1,4 @@
 // providers/AuthProvider/index.tsx
-
 "use client";
 import React, {
   createContext,
@@ -105,7 +104,6 @@ export const AuthProvider = ({
 
   // 🔄 Session refresh
   const refreshSession = async () => {
-    // Eğer zaten refresh yapılıyorsa, tekrar yapma
     if (isRefreshingRef.current) return;
 
     if (!session.token) {
@@ -122,10 +120,13 @@ export const AuthProvider = ({
       console.log("Session refreshed:", res);
 
       if (res.success) {
-        setSession({ user: res.data.user, token: session.token });
+        // Backend’den user verisini düzgün al
+        const userData = res.data.user || res.data || null;
+        setSession({ user: userData, token: session.token });
+        storageAdapter.setSession({ user: userData, token: session.token });
         setStatus("authenticated");
       } else {
-        // Token geçersizse logout yap
+        // Token geçersiz veya hata durumunda logout yap
         setSession({ user: null, token: null });
         setStatus("unauthenticated");
         storageAdapter.clear();
@@ -133,7 +134,6 @@ export const AuthProvider = ({
       }
     } catch (error) {
       console.error("Session refresh error:", error);
-      // Hata durumunda da logout yap
       setSession({ user: null, token: null });
       setStatus("unauthenticated");
       storageAdapter.clear();
@@ -143,17 +143,15 @@ export const AuthProvider = ({
     }
   };
 
-  // 🕐 Otomatik refresh interval'ı başlat
+  // 🕐 Otomatik refresh interval başlat
   const startRefreshInterval = () => {
-    clearRefreshInterval(); // Önceki interval'ı temizle
-
-    // refreshInterval dakika cinsinden gelir, ms'ye çevir
+    clearRefreshInterval();
     refreshIntervalRef.current = setInterval(() => {
       refreshSession();
     }, refreshInterval * 60 * 1000);
   };
 
-  // 🛑 Refresh interval'ı durdur
+  // 🛑 Interval temizle
   const clearRefreshInterval = () => {
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
@@ -201,7 +199,7 @@ export const AuthProvider = ({
 
   // 🔐 Sign In
   const signIn = async (
-    type: "email" | "phone" | "credential",
+    type: "credential",
     email: string,
     password: string
   ) => {
@@ -245,9 +243,7 @@ export const AuthProvider = ({
   // 🚪 Sign Out
   const signOut = async () => {
     try {
-      if (session.token) {
-        await apiSignOut(session.token);
-      }
+      if (session.token) await apiSignOut(session.token);
     } catch (error) {
       console.error("Sign out error:", error);
     } finally {
@@ -262,21 +258,19 @@ export const AuthProvider = ({
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // SSR'den gelen session varsa onu kullan
+        // SSR’den gelen session varsa onu kullan
         if (initialSession) {
           setSession(initialSession);
+          await refreshSession();
           setStatus("authenticated");
           startRefreshInterval();
           return;
         }
 
-        // Storage'dan token kontrol et
+        // Storage’dan token kontrol et
         const savedToken = storageAdapter.getToken();
-        const savedSession = storageAdapter.getSession();
-
-        if (savedToken && savedSession) {
-          setSession(savedSession);
-          await refreshSession();
+        if (savedToken) {
+          await refreshSession(); // Backend doğrula
           startRefreshInterval();
         } else {
           setStatus("unauthenticated");
@@ -289,26 +283,18 @@ export const AuthProvider = ({
 
     initializeAuth();
 
-    // Component unmount olduğunda interval'ı temizle
-    return () => {
-      clearRefreshInterval();
-    };
-  }, []); // Sadece component mount'ta çalışsın
+    // Component unmount olduğunda interval’ı temizle
+    return () => clearRefreshInterval();
+  }, []);
 
-  // 👁️ Sayfa odak durumu kontrol et (kullanıcı sayfaya geri döndüğünde refresh yap)
+  // 👁️ Sayfa odak durumu kontrol et
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (!document.hidden && session.token && status === "authenticated") {
-        // Sayfa görünür olduğunda session'ı kontrol et
-        refreshSession();
-      }
+      if (!document.hidden && session.token) refreshSession();
     };
 
-    // Sayfa focus/blur eventlerini dinle
     const handleFocus = () => {
-      if (session.token && status === "authenticated") {
-        refreshSession();
-      }
+      if (session.token) refreshSession();
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -318,7 +304,7 @@ export const AuthProvider = ({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
     };
-  }, [session.token, status]);
+  }, [session.token]);
 
   return (
     <AuthContext.Provider
