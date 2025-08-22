@@ -8,9 +8,7 @@ import { FaSpotify } from "react-icons/fa";
 import { RiLoginCircleLine, RiLogoutCircleRLine } from "react-icons/ri";
 import Image from "next/image";
 
-import { fetchSession, signOut } from "@/scripts/services/auth";
-// 🔻 KALDIRILDI: NextAuth kullanılmıyor ama ileride alternatif auth gelirse tekrar eklenebilir
-// import { signOut, useSession } from "next-auth/react"; // 💡 auth sistemi eklendiğinde burası yeniden aktif edilecek
+import { useAuth } from "@/providers/AuthProvider/hook"; // 🔻 EKLENDİ: Auth provider import edildi
 
 const Items = [
   {
@@ -39,7 +37,15 @@ const Items = [
     role: ["admin"],
   },
   {
-    name: "Log In",
+    name: "Sign Out",
+    href: "/user/logout",
+    key: "logout",
+    icon: <RiLogoutCircleRLine size="25px" />,
+    showOnAuth: true,
+    requireAuth: true,
+  },
+  {
+    name: "Sign In",
     href: "/user/login",
     key: "login",
     icon: <RiLoginCircleLine size="25px" />,
@@ -54,35 +60,11 @@ interface AccountMenuProps {
   data?: string;
 }
 
-interface User {
-  userID: number;
-  email: string;
-  role: string; // admin, user gibi roller
-  username?: string;
-  firstname?: string;
-  lastname?: string;
-  age?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  image?: string; // profil fotoğrafı varsa
-}
-
-interface Session {
-  user: User | null;
-  isAuthenticated: boolean;
-}
-
 const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
+  const { session, status } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-
-  const [session, setSession] = useState<Session>({
-    user: null,
-    isAuthenticated: false,
-  });
-
-  const [isLoaded, setIsLoaded] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const buttonRef = useRef<HTMLDivElement | null>(null);
 
@@ -106,116 +88,37 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
     };
   }, []);
 
-  // component içi
-  // useEffect(() => {
-  //   const getSession = async () => {
-  //     localStorage.setItem("token", "dummy_token");
-  //     const token = localStorage.getItem("token");
-
-  //     if (!token) {
-  //       setSession({ user: null, isAuthenticated: false });
-  //       return;
-  //     }
-
-  //     // Beklenmedik hata gelirse burada throw olur ve Next dev overlay gösterir.
-  //     const result = await fetchSession(token);
-
-  //     if (result.success) {
-  //       setSession({ user: result.data, isAuthenticated: true });
-  //       return;
-  //     }
-
-  //     // ❌ Hata durumları (beklenenler)
-  //     if (result.status === 401) {
-  //       localStorage.removeItem("token");
-  //       setSession({ user: null, isAuthenticated: false });
-
-  //       // handleUnauthorized(result.message);
-  //     }
-  //     // else if (result.status === 403) {
-  //     //   // handleForbidden(result.message);
-  //     // } else if (result.status === 404) {
-  //     //   // handleNotFound(result.message);
-  //     // } else if (result.status === 429) {
-  //     //   // handleTooManyRequests(result.message);
-  //     // } else if (result.status >= 500) {
-  //     //   // handleServerError(result.message);
-  //     // } else {
-  //     //   // handleGenericError(result.message);
-  //     // }
-  //   };
-
-  //   getSession();
-  // }, []);
-
   useEffect(() => {
-    const getSession = async () => {
-      // localStorage.setItem("token", "dummy_token");
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setSession({ user: null, isAuthenticated: false });
-        return;
-      }
-
-      const result = await fetchSession(token);
-
-      if (result.success) {
-        setSession({ user: result.data, isAuthenticated: true });
-      } else {
-        if (result.status === 401) {
-          localStorage.removeItem("token");
-          setSession({ user: null, isAuthenticated: false });
-        } else {
-          // beklenen hata (örn. sunucu kapalı veya 429 vs.)
-          // setError(result.message);
-        }
-      }
-    };
-
-    getSession();
-  }, []);
-
-  useEffect(() => {
-    console.log("Session güncellendi:", session);
-    if (session.isAuthenticated) {
-      setIsAuthenticated(true);
-    }
-  }, [session]);
-
-  // 🔻 KALDIRILDI: session.status kontrolü artık yok, ama benzeri logic Go auth geldiğinde tekrar eklenebilir
-  /*
-  useEffect(() => {
+    console.log("Auth status changed:", status);
     if (status === "authenticated") {
+      setIsLoaded(true);
       setIsAuthenticated(true);
-      setIsLoaded(true);
     } else if (status === "unauthenticated") {
-      setIsAuthenticated(false);
       setIsLoaded(true);
-    } else if (status === "loading") {
-      setIsLoaded(false);
+      setIsAuthenticated(false);
     }
   }, [status]);
-  */
+
+  useEffect(() => {
+    console.log("Session changed:", session);
+  }, [session]);
 
   const handleAccountMenu = () => {
     setIsOpen((prev) => !prev);
   };
 
-  const signOutFunction = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    localStorage.removeItem("token");
-    signOut(token);
-  };
+  // const signOutFunction = () => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) return;
+  //   localStorage.removeItem("token");
+  //   signOut(token);
+  // };
 
   return (
     <div className={`flex flex-col ${className}`} ref={buttonRef}>
-      {/* 🔻 KALDIRILDI: session.user.image koşulu yerine null kontrolü */}
-      {/* 💡 Auth eklendiğinde burası yeniden açılır */}
       {isAuthenticated && session?.user?.image ? (
         <Image
-          className="rounded-full cursor-pointer"
+          className="rounded-full cursor-pointer w-[30px] h-[30px]"
           src={session.user.image}
           width={30}
           height={30}
@@ -229,7 +132,6 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
           onClick={handleAccountMenu}
         />
       )}
-
       {!isLoaded
         ? isOpen && <div>Yükleniyor...</div>
         : isOpen && (
@@ -254,7 +156,7 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
                   </Link>
                 );
               })}
-
+              {/* 
               {isAuthenticated && (
                 <Link
                   // href="/logout"
@@ -265,7 +167,7 @@ const AccountMenu = ({ className, children, data }: AccountMenuProps) => {
                   <h3 className="w-full mr-2">Sign Out</h3>
                   <RiLogoutCircleRLine size="25px" />
                 </Link>
-              )}
+              )} */}
 
               <div className="border-2 border-red-500 rounded-lg p-4 animate-pulse mt-2">
                 <h1 className="text-lg font-bold">

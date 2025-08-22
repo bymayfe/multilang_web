@@ -1,66 +1,65 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "@/providers/AuthProvider/hook";
 
-import { registerUser } from "@/scripts/services/auth";
-// import { signIn, getCsrfToken } from "next-auth/react";
-// import { csrfToken } from 'next-auth/react'
-
-interface RegisterProps {
+type RegisterProps = {
   className?: string;
-}
+};
 
 const Register = ({ className }: RegisterProps) => {
+  const { signUp, session } = useAuth();
   const router = useRouter();
-  // const csrfToken = getCsrfToken();
 
   const [hidden, setHidden] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const [error, setError] = useState("It's still too early");
   const [success, setSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const toggleEye = () => setHidden((prev) => !prev);
+  const goLogin = () => router.push("/user/login");
 
-  const toggleEye = () => {
-    setHidden((prev) => !prev);
-  };
-
-  const signInPage = () => {
-    router.push("/user/login");
-  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
     const firstname = formData.get("firstname") as string;
     const lastname = formData.get("lastname") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const registerData = { firstname, lastname, email, password };
-
     try {
-      const result = await registerUser(registerData);
+      const result = await signUp({ firstname, lastname, email, password });
 
       if (result.success) {
-        localStorage.setItem("token", result.data.token);
         setSuccess(true);
         setError(null);
-        setTimeout(() => router.push("/home"), 2000);
+        router.push("/home"); // başarılı kayıt sonrası yönlendirme
       } else {
         setSuccess(false);
-        setError(result.message); // kullanıcıya göster
+        setError(result.message || "Kayıt başarısız!");
       }
-    } catch (err: any) {
-      throw err; // beklenmedik → Next overlay
+    } catch (err) {
+      console.error("SignUp error:", err);
+      setSuccess(false);
+      setError("Beklenmedik bir hata oluştu");
     }
   };
 
-  if (!mounted) return null; // Prevents hydration mismatch
+  // 🔑 Eğer session varsa → otomatik yönlendir
+  useEffect(() => {
+    if (session?.token) {
+      router.push("/"); // istersen /home yapabilirsin
+    }
+  }, [session, router]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Eğer mount olmamış veya session varsa → null döndür
+  if (!mounted || session?.token) return null;
 
   return (
     <div
@@ -77,7 +76,7 @@ const Register = ({ className }: RegisterProps) => {
         </h3>
       )}
 
-      <form className="flex flex-col" onSubmit={(e) => handleSubmit(e)}>
+      <form className="flex flex-col" onSubmit={handleSubmit}>
         <div className="flex flex-row mb-2">
           <div className="rounded-lg border py-2 px-3 mr-2">
             <input
@@ -105,7 +104,6 @@ const Register = ({ className }: RegisterProps) => {
             name="email"
             type="email"
             required
-            // suppressHydrationWarning
           />
         </div>
         <div className="flex items-center justify-center flex-row border rounded-lg p-2 mb-2">
@@ -119,14 +117,14 @@ const Register = ({ className }: RegisterProps) => {
           {hidden ? (
             <FaEyeSlash
               size={25}
-              className="hover:bg-slate-600 rounded-full duration-300"
-              onClick={() => toggleEye()}
+              className="hover:bg-slate-600 rounded-full duration-300 cursor-pointer"
+              onClick={toggleEye}
             />
           ) : (
             <FaEye
               size={25}
-              className="hover:bg-slate-600 rounded-full duration-300"
-              onClick={() => toggleEye()}
+              className="hover:bg-slate-600 rounded-full duration-300 cursor-pointer"
+              onClick={toggleEye}
             />
           )}
         </div>
@@ -137,10 +135,10 @@ const Register = ({ className }: RegisterProps) => {
               type="submit"
             >
               I'm Ready
-              <span className="absolute w-36 h-32 -top-8 -left-2 bg-white rotate-12 transform scale-x-0 group-hover/button:scale-x-100 transition-transform group-hover/button:duration-500 duration-1000 origin-left"></span>
-              <span className="absolute w-36 h-32 -top-8 -left-2 bg-indigo-400 rotate-12 transform scale-x-0 group-hover/button:scale-x-100 transition-transform group-hover/button:duration-700 duration-700 origin-left"></span>
-              <span className="absolute w-36 h-32 -top-8 -left-2 bg-indigo-600 rotate-12 transform scale-x-0 group-hover/button:scale-x-50 transition-transform group-hover/button:duration-1000 duration-500 origin-left"></span>
-              <span className="group-hover/button:opacity-100 group-hover/button:duration-1000 duration-100 opacity-0 absolute top-2.5 left-6 z-10">
+              <span className="absolute w-36 h-32 -top-8 -left-2 bg-white rotate-12 transform scale-x-0 group-hover/button:scale-x-100 transition-transform duration-1000 origin-left"></span>
+              <span className="absolute w-36 h-32 -top-8 -left-2 bg-indigo-400 rotate-12 transform scale-x-0 group-hover/button:scale-x-100 transition-transform duration-700 origin-left"></span>
+              <span className="absolute w-36 h-32 -top-8 -left-2 bg-indigo-600 rotate-12 transform scale-x-0 group-hover/button:scale-x-50 transition-transform duration-500 origin-left"></span>
+              <span className="group-hover/button:opacity-100 duration-100 opacity-0 absolute top-2.5 left-6 z-10">
                 Register!
               </span>
             </button>
@@ -154,7 +152,6 @@ const Register = ({ className }: RegisterProps) => {
             </span>
             <span className="absolute top-0 left-0 w-full bg-green-500 duration-500 group-hover:-translate-x-full h-full"></span>
             <span className="absolute top-0 left-0 w-full bg-green-500 duration-500 group-hover:translate-x-full h-full"></span>
-
             <span className="absolute top-0 left-0 w-full bg-green-500 duration-500 delay-300 group-hover:-translate-y-full h-full"></span>
             <span className="absolute delay-300 top-0 left-0 w-full bg-green-500 duration-500 group-hover:translate-y-full h-full"></span>
           </button>
@@ -163,8 +160,8 @@ const Register = ({ className }: RegisterProps) => {
       <div className="flex flex-row">
         <h2 className="text-lg mt-2 mr-2">Have an account ?</h2>
         <button
-          onClick={() => signInPage()}
-          className="relative hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0"
+          onClick={goLogin}
+          className="relative hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0"
         >
           Sign In
         </button>
