@@ -56,7 +56,7 @@ const Login = ({ className }: LoginProps) => {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted || session?.token) return null;
+  if (!mounted || session?.token) return null; // burası success yazısını bypass ediyor
 
   const ErrCrd = searchParams.get("error")?.replace("Error: ", "");
 
