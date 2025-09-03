@@ -1,0 +1,10 @@
+FROM golang:1.24
+
+WORKDIR /app
+COPY . .
+
+# go run için sadece source yeterli
+RUN go mod tidy
+
+EXPOSE 3001
+CMD ["go", "run", "main.go"]

@@ -17,10 +17,14 @@ interface RegisterProps {
 }
 
 // -------------------------
+// API base URL env değişkeni ile
+const API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL;
+
+// -------------------------
 // Kullanıcı kaydı (register)
 export async function signUp(data: RegisterProps) {
   try {
-    const res = await fetch("http://localhost:3001/user/signup", {
+    const res = await fetch(`${API_URL}/user/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -35,7 +39,6 @@ export async function signUp(data: RegisterProps) {
 
     if (res.ok) return { success: true as const, data: json };
 
-    // Beklenen hatalar (HTTP 400, 401, 403, 404, 409, 500+)
     if ([400, 401, 403, 404, 409].includes(res.status) || res.status >= 500) {
       return {
         success: false as const,
@@ -62,7 +65,7 @@ export async function signUp(data: RegisterProps) {
         data: null,
       };
     }
-    throw err; // beklenmedik → overlay
+    throw err;
   }
 }
 
@@ -70,7 +73,7 @@ export async function signUp(data: RegisterProps) {
 // Kullanıcı giriş işlemi (signIn)
 export async function signIn(email: string, password: string) {
   try {
-    const res = await fetch("http://localhost:3001/user/login", {
+    const res = await fetch(`${API_URL}/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -85,7 +88,6 @@ export async function signIn(email: string, password: string) {
 
     if (res.ok) return { success: true as const, data: json };
 
-    // Hata durumları için özel mesajlar
     switch (res.status) {
       case 400:
         return {
@@ -156,7 +158,7 @@ export async function signIn(email: string, password: string) {
 // Aktif session kontrolü (fetchSession)
 export async function fetchSession(token: string) {
   try {
-    const res = await fetch("http://localhost:3001/user/session", {
+    const res = await fetch(`${API_URL}/user/session`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -173,7 +175,6 @@ export async function fetchSession(token: string) {
 
     if (res.ok) return { success: true as const, data };
 
-    // Hata durumları için özel mesajlar
     switch (res.status) {
       case 401:
         return {
@@ -236,7 +237,7 @@ export async function fetchSession(token: string) {
 // Kullanıcı çıkış işlemi (signOut)
 export async function signOut(token: string) {
   try {
-    const res = await fetch("http://localhost:3001/user/logout", {
+    const res = await fetch(`${API_URL}/user/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
