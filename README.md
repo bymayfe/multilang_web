@@ -141,7 +141,7 @@ curl -X POST http://localhost:3001/user/signup \
     "username": "aliveli",
     "firstname": "Ali",
     "lastname": "Veli",
-    "age": 25
+    "age": 21
   }'
 ```
 
