@@ -8,24 +8,33 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"multilang_web/routes"
 )
 
 func main() {
-	// 🔌 MongoDB bağlantisini başlat (users + sessions collections)
+	// 🔌 MongoDB bağlantisini başlat
 	routes.InitMongo()
 
-	// 🛣 Router'i kur (yeni logout endpoint'leri dahil)
+	// 🛣 Router'i kur
 	router := routes.SetupRouter()
 
-	// 🚀 Sunucuyu çaliştir
+	// 🌐 Port'u .env'den oku, yoksa default 3001 kullan
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3001"
+	}
+
 	log.Println("🎉 Session-based auth sistemi başlatıldı!")
 	log.Println("📍 Yeni endpoint'ler:")
 	log.Println("   - POST /user/logout        (tek cihazdan çıkış)")
 	log.Println("   - POST /user/logout-all    (tüm cihazlardan çıkış)")
 	log.Println("   - GET  /user/sessions      (aktif session'ları listele)")
 	log.Println("")
-	log.Println("🌐 Sunucu http://localhost:3001 adresinde calisiyor")
-	log.Fatal(http.ListenAndServe(":3001", router))
+	log.Printf("🌐 Sunucu http://localhost:%s adresinde calisiyor\n", port)
+
+	log.Fatal(http.ListenAndServe(":"+port, router))
+	// log.Fatal(http.ListenAndServe(":3001", router))
+
 }

@@ -8,3 +8,4 @@ RUN go mod tidy
 
 EXPOSE 3001
 CMD ["go", "run", "main.go"]
+# CMD ["air", "-c", ".air.toml"]

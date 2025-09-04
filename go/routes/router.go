@@ -4,6 +4,7 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"multilang_web/middleware"
 
@@ -13,8 +14,13 @@ import (
 // CORS middleware
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Frontend origin
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		// Frontend origin (.env'den alınır)
+		frontendURL := os.Getenv("FRONTEND_URL")
+		if frontendURL == "" {
+			frontendURL = "http://localhost:3000" // varsayılan
+		}
+
+		w.Header().Set("Access-Control-Allow-Origin", frontendURL)
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 

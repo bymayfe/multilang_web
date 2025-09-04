@@ -1,0 +1,7 @@
+örnek .env dosyası içeriği: go için
+
+# Sunucu yapılandırması
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+JWT_SECRET=ÇKOGİZLİANAHTAR
+MONGODB_URI=mongodb+srv://kullaniciadi:parola@cluster.mongodb.net/veritabani?retryWrites=true&w=majority
