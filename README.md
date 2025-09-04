@@ -251,9 +251,6 @@ providers/
 - ✅ **Token persistence** (localStorage/sessionStorage)
 - ✅ **TypeScript** desteği
 - ✅ **Session lifecycle** management
-
-### Özellikler:
-
 - ✅ **Multi-device login** desteği
 - ✅ **Automatic cleanup** (expired sessions)
 - ✅ **Device detection** (mobile/tablet/desktop)
