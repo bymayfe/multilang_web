@@ -228,7 +228,29 @@ FRONTEND_URL=http://localhost:3000
 - **Multi-Device**: Aynı kullanıcı birden fazla cihazda login olabilir
 - **Secure Headers**: Authorization header validation
 
-## 📊 Session Management
+## 📊 Session Management (🔐 Custom Auth System)
+
+### Next-Auth Benzeri Yapı
+
+Proje, **Next-Auth** benzeri bir authentication sistemi içerir ancak **tamamen custom** olarak geliştirilmiştir:
+
+```typescript
+// Custom AuthProvider sistemi
+providers/
+└── AuthProvider/
+    ├── index.tsx      # Ana provider (Next-Auth gibi)
+    ├── hook.ts        # useAuth hook
+    ├── storage.ts     # Storage adapters
+    └── types.ts       # Type definitions
+```
+
+### Özellikler:
+
+- ✅ **Context API** tabanlı state management
+- ✅ **useAuth hook** ile kolay kullanım
+- ✅ **Token persistence** (localStorage/sessionStorage)
+- ✅ **TypeScript** desteği
+- ✅ **Session lifecycle** management
 
 ### Özellikler:
 
@@ -318,14 +340,6 @@ db.sessions.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 - **Session Cleanup**: Her saat expired session'ları temizler
 - **Health Monitoring**: MongoDB bağlantısını kontrol eder
-
-## 🤝 Contributing
-
-1. Repository'yi fork et
-2. Feature branch oluştur (`git checkout -b feature/amazing-feature`)
-3. Commit'le (`git commit -m 'Add amazing feature'`)
-4. Branch'e push et (`git push origin feature/amazing-feature`)
-5. Pull Request oluştur
 
 ## 📝 License
 
