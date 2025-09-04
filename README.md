@@ -1,6 +1,9 @@
 # 🌍 MultiLang_Web
 
 Modern, çok dilli web uygulaması - **Go Backend** + **Next.js Frontend** + **MongoDB** + **Docker**
+Bu projeyi Go dilini öğrenmek ve kendi AUTH sistemimi hazırlamak için oluşturdum.
+
+- Yorum satırlarını oluşturmak için Yapay Zeka araçlarından bol bol yararlanıldı.
 
 ![Go](https://img.shields.io/badge/Go-1.24.4-00ADD8?style=for-the-badge&logo=go)
 ![Next.js](https://img.shields.io/badge/Next.js-15.3.5-000000?style=for-the-badge&logo=next.js)
