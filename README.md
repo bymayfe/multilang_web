@@ -359,7 +359,7 @@ Bu proje MIT License altında lisanslanmıştır. Detaylar için `LICENSE` dosya
 _Full-Stack Developer & Project Creator_
 
 [![GitHub](https://img.shields.io/badge/GitHub-bymayfe-181717?style=for-the-badge&logo=github)](https://github.com/bymayfe)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Seyfettin_Budak-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/seyfettin-budak-530a37333/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Seyfettin_Budak-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/seyfettinbudak/)
 [![Discord](https://img.shields.io/badge/Discord-Personal-5865F2?style=for-the-badge&logo=discord)](https://discord.com/users/402047297963294730)
 
 **Tech Stack:** Go • Next.js • TypeScript • MongoDB • Docker
