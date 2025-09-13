@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ./go
+      dockerfile: Dockerfile.dev # Dev için, prod'da Dockerfile.prod kullan
+    container_name: go-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./go:/app # Kodları mount et, dev için hot-reload
+
+  frontend:
+    build:
+      context: ./nextjs
+      dockerfile: Dockerfile.dev # Dev için, prod'da Dockerfile.prod kullan
+    container_name: next-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # Dev ortam: Docker Compose network kullanılıyor
+      NEXT_PUBLIC_AUTH_API_URL: "http://backend:3001"
+      # Prod ortam için yorum: localhost yerine prod URL veya reverse proxy kullan
+      # NEXT_PUBLIC_AUTH_API_URL: "http://localhost:3001"
+    depends_on:
+      - backend
+    volumes:
+      - ./nextjs:/app # Kodları mount et, dev için hot-reload
+      - /app/node_modules # node_modules mount ile korunur
+    command: npm run dev # Dev süreci için hot-reload
+
+#
